@@ -1,0 +1,56 @@
+/* styles.css */
+
+body {
+	white-space: pre-line;
+	text-align: center;
+	height: 100%;
+	margin: 0px;
+	z-index: 0;
+	background-color: rgb(210, 210, 210);
+}
+
+/* canvas */
+canvas {
+	position: fixed;
+	top: 0;
+	left: 0%;
+	z-index: 0;
+}
+
+/* element with id: infoText */
+#infoText {
+	position: relative;
+	left: 0;
+	top: 0;
+	background-color: rgba(255, 255, 255, 0.5);
+	width: max-content;
+	z-index: 1;
+}
+
+/* element with id: controlsTab */
+#controlsTab {
+	text-align: left;
+	font-size: 75%;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	height: min-content;
+	background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* "p" element within element with id: controlsTab */
+#controlsTab p {
+	margin: 0px;
+}
+
+#seedText {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  scale: 90%;
+  z-index: 1;
+  height: 1em;
+}
+
+/* end of styles.css file */
