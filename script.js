@@ -134,19 +134,6 @@ function findNearest() {
 }
 
 function savePoints(){
-    var completedSeeds = localStorage.getItem('completedSeeds');
-    
-    if (!completedSeeds) {
-        localStorage.setItem('completedSeeds', JSON.stringify([{seed: seed, count: count}]));
-    } else {
-        let seedsArray = JSON.parse(completedSeeds);
-        if (completedSeeds.includes(seed)) return
-        seedsArray.push({seed: seed, count: count});
-        localStorage.setItem('completedSeeds', JSON.stringify(seedsArray));
-    }
-}
-
-function savePoints(){
   var completedSeeds = localStorage.getItem('completedSeeds');
   let seedsArray = [];
   if (completedSeeds) {
