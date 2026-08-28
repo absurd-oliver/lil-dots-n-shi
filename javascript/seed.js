@@ -33,3 +33,4 @@ export function generatePoints(seed, count, width, height) {
   }
   return points;
 }
+

@@ -6,6 +6,7 @@ import { generatePoints } from './javascript/seed.js';
 // declare constants
 const canvas = document.getElementById('cartesianCanvas');
 const ctx = canvas.getContext('2d');
+const infoText = document.getElementById('infoText');
 const numSlider = document.getElementById('pointsNumSlider');
 const numSliderText = document.getElementById('pointsNumSliderText');
 const sizeSlider = document.getElementById('pointSizeSlider');
@@ -28,7 +29,7 @@ var nearestPoint;
 
 // event listeners
 window.addEventListener('mousemove', mouseMoveHandler);
-canvas.addEventListener('click', testclicks);
+window.addEventListener('click', clicks);
 window.addEventListener('contextmenu', function(event) {
 	event.preventDefault();
 	console.log("prevented context menu !");
@@ -69,8 +70,14 @@ numSlider.addEventListener('change', saveState);
 sizeSlider.addEventListener('change', saveState);
 
 seedText.addEventListener('input', () => {
- setSeed(seedText.value);
+  setSeed(seedText.value);
 });
+
+seedText.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') generateSeed()
+});
+
+document.getElementById('toSeedRegButton').addEventListener('click', () => {window.location = './seedreg.html';});
 
 function setSeed(value){
   seed = value;
@@ -91,6 +98,7 @@ function mouseMoveHandler(e) {
 		globalMouseY = e.clientY;
 		infoTextHandler();
 		renderCanvas(e.clientX - globalcenterX, e.clientY - globalcenterY);
+    if (seededPoints.length === completedSeededPoints.length) savePoints();
 	} else return
 }
 
@@ -100,20 +108,6 @@ function infoTextHandler() {
   center: (${globalcenterX}, ${globalcenterY})
   ` + vectorHandler([globalcenterX, globalcenterY], [globalMouseX, globalMouseY]);
   seedText.value = `${seed}`;
-}
-
-function testingText(){
-  let content = `
-    ${findNearest().x},${findNearest().y}
-  `;
-
-  for(let i = 0; i < seededPoints.length; i++){
-    content += `\n${JSON.stringify(seededPoints[i])}`;
-  }
-
-  content += `\n${JSON.stringify(completedSeededPoints)}`;
-
-  document.getElementById("testingTextElem").textContent = content;
 }
 
 function findNearest() {
@@ -139,6 +133,18 @@ function findNearest() {
   return incompletePoints[shortIndex];
 }
 
+function savePoints(){
+    var completedSeeds = localStorage.getItem('completedSeeds');
+    
+    if (!completedSeeds) {
+        localStorage.setItem('completedSeeds', JSON.stringify([seed]));
+    } else {
+        let seedsArray = JSON.parse(completedSeeds);
+        if (completedSeeds.includes(seed)) return
+        seedsArray.push(seed);
+        localStorage.setItem('completedSeeds', JSON.stringify(seedsArray));
+    }
+}
 
 
 
@@ -195,7 +201,7 @@ function generateSeed(){
   setSeed(output.join(''));
 }
 
-function testclicks(){
+function clicks(){
   const mouseC = vHandler([resizeHandler()[0], resizeHandler()[1]], [globalMouseX, globalMouseY])
   for(let i = 0; i < seededPoints.length; i++){
       if(mouseC.x >= seededPoints[i].x-pointSize && mouseC.x <= seededPoints[i].x+pointSize){
@@ -211,6 +217,8 @@ function testclicks(){
     saveState();
 }
 
+// for debug purposes, currently unused
+function debug(){}
 
 // render canvas, handle rendering canvas and all its components, excluding single points (handled by calling drawPoint())
 function renderCanvas(mousex, mousey) {
@@ -256,9 +264,6 @@ function renderCanvas(mousex, mousey) {
     ctx.stroke();
   }
 
-  
-    
-
 	// Draw all the points
   seededPoints.forEach(point => {
     drawPoint(ctx, point.x, point.y, pointSize-(pointSize/5), 'black', false);
@@ -269,13 +274,11 @@ function renderCanvas(mousex, mousey) {
     drawPoint(ctx, point.x, point.y, pointSize, 'black', true);
   });
 
-
-
-  //testingText();
+  //debug()
 }
 
+
 function saveState(){
-  if (seed.trim() === '' || seed.includes(" ")) generateSeed();
   const save = {
     completedSeededPoints: completedSeededPoints,
     pointSize: pointSize,
@@ -304,16 +307,16 @@ const loadSave = savedString ? () => {
 
 // initialization, handles initialization
 function init() {
-  seededPoints = generatePoints(seed, count, window.innerWidth, window.innerHeight)
+  seededPoints = generatePoints(seed, count, window.innerWidth, window.innerHeight);
 	globalcenterX = resizeHandler()[0];
 	globalcenterY = resizeHandler()[1];
 	infoText.textContent = `cursor: (${globalMouseX}, ${globalMouseY})
   center: (${globalcenterX}, ${globalcenterY})
   ` + vectorHandler([globalcenterX, globalcenterY], [globalMouseX, globalMouseY]);
   loadSave();
+  if(seededPoints.length === completedSeededPoints.length) generateSeed();
 	renderCanvas(globalMouseX - globalcenterX, globalMouseY - globalcenterY);
   infoTextHandler();
-  if (seed.trim() === '' || seed.includes(" ")) generateSeed();
   console.log('ran init() & initialized');
 }
 
